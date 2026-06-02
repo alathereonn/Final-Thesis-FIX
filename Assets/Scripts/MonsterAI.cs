@@ -112,6 +112,8 @@ public class MonsterAI : MonoBehaviour
     {
         Debug.Log($"[GAME OVER] KENA JUMPSCARE SAMA {monsterName}!");
 
+        Time.timeScale = 0f;
+
         StopAllCoroutines(); 
         if (fpsController != null) fpsController.canMove = false;
         
