@@ -1411,7 +1411,7 @@ GameObject:
   - component: {fileID: 429671168}
   - component: {fileID: 429671172}
   m_Layer: 5
-  m_Name: PeekCanvas
+  m_Name: RoomDoorPeekCanvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -1516,12 +1516,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   monsterAI: {fileID: 1524694789}
   doorViewImage: {fileID: 1472608740}
-  tombolInteract: {fileID: 548481174}
-  teksTombolInteract: {fileID: 1530987195}
-  tombolBack: {fileID: 482490475}
-  fotoPintuTutup: {fileID: 21300000, guid: 4820cb739b80449449bc0440303bdcdf, type: 3}
-  fotoLorongKosong: {fileID: 21300000, guid: ee2323186ebb9a24a8df3aa3b4657273, type: 3}
-  fotoMonster: {fileID: 21300000, guid: 201b170c1f89a0a4c93bb5bfced64517, type: 3}
+  interactButton: {fileID: 548481174}
+  interactButtonText: {fileID: 1530987195}
+  backButton: {fileID: 482490475}
+  closedDoorSprite: {fileID: 21300000, guid: db7813a496a621d40955cdcee8bf4095, type: 3}
+  emptyCorridorSprite: {fileID: 21300000, guid: 6c6a5ff24a11bcc4092f0cf6904d2214, type: 3}
+  stage1Sprite: {fileID: 21300000, guid: 6c6a5ff24a11bcc4092f0cf6904d2214, type: 3}
+  stage2Sprite: {fileID: 21300000, guid: 705c9c83620575340913c604588acc7d, type: 3}
+  stage3Sprite: {fileID: 0}
+  monsterAtDoorSprite: {fileID: 21300000, guid: 5c5f9112ee1a57246904871198ebf787, type: 3}
 --- !u!1 &440383474
 GameObject:
   m_ObjectHideFlags: 0
@@ -3479,7 +3482,7 @@ GameObject:
   - component: {fileID: 575139890}
   - component: {fileID: 575139889}
   m_Layer: 5
-  m_Name: Canvas
+  m_Name: Timer Canvas
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -6297,12 +6300,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   monsterAI: {fileID: 353189080}
   doorViewImage: {fileID: 1269882857}
-  tombolInteract: {fileID: 1727852107}
-  teksTombolInteract: {fileID: 1343313475}
-  tombolBack: {fileID: 746601517}
-  fotoPintuTutup: {fileID: 21300000, guid: 4820cb739b80449449bc0440303bdcdf, type: 3}
-  fotoLorongKosong: {fileID: 21300000, guid: ee2323186ebb9a24a8df3aa3b4657273, type: 3}
-  fotoMonster: {fileID: 21300000, guid: 201b170c1f89a0a4c93bb5bfced64517, type: 3}
+  interactButton: {fileID: 1727852107}
+  interactButtonText: {fileID: 1343313475}
+  backButton: {fileID: 746601517}
+  closedDoorSprite: {fileID: 21300000, guid: c4f05e1293ddd2d42b002e2e20fcb264, type: 3}
+  emptyCorridorSprite: {fileID: 21300000, guid: 9c2f8d786b11da242a5efa283f266c83, type: 3}
+  stage1Sprite: {fileID: 21300000, guid: 9c2f8d786b11da242a5efa283f266c83, type: 3}
+  stage2Sprite: {fileID: 21300000, guid: 83cf3e35c15a53349a6e9f98b2c23976, type: 3}
+  stage3Sprite: {fileID: 21300000, guid: 83cf3e35c15a53349a6e9f98b2c23976, type: 3}
+  monsterAtDoorSprite: {fileID: 21300000, guid: 5b6f1376d03a5184082dee577fe36183, type: 3}
 --- !u!114 &907024752
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -9592,12 +9598,15 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   monsterAI: {fileID: 694324767}
   doorViewImage: {fileID: 836049283}
-  tombolInteract: {fileID: 1590342783}
-  teksTombolInteract: {fileID: 117981241}
-  tombolBack: {fileID: 1355282151}
-  fotoPintuTutup: {fileID: 21300000, guid: 4820cb739b80449449bc0440303bdcdf, type: 3}
-  fotoLorongKosong: {fileID: 21300000, guid: ee2323186ebb9a24a8df3aa3b4657273, type: 3}
-  fotoMonster: {fileID: 21300000, guid: 201b170c1f89a0a4c93bb5bfced64517, type: 3}
+  interactButton: {fileID: 1590342783}
+  interactButtonText: {fileID: 117981241}
+  backButton: {fileID: 1355282151}
+  closedDoorSprite: {fileID: 21300000, guid: df5fe3374721fcb4c85f6df826d31c2f, type: 3}
+  emptyCorridorSprite: {fileID: 21300000, guid: df5fe3374721fcb4c85f6df826d31c2f, type: 3}
+  stage1Sprite: {fileID: 21300000, guid: df5fe3374721fcb4c85f6df826d31c2f, type: 3}
+  stage2Sprite: {fileID: 21300000, guid: db545dda84de18846beafcadfd11d5de, type: 3}
+  stage3Sprite: {fileID: 0}
+  monsterAtDoorSprite: {fileID: 21300000, guid: 00b046dd8fcbcb54a999aae2d3fb6ef0, type: 3}
 --- !u!114 &1428260687
 MonoBehaviour:
   m_ObjectHideFlags: 0

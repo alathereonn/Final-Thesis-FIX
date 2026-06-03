@@ -5,78 +5,102 @@ using System.Collections;
 
 public class Door2DManager : MonoBehaviour
 {
-    [Header("Referensi")]
+    [Header("References")]
     public MonsterAI monsterAI; 
     public Image doorViewImage; 
     
-    public Button tombolInteract; 
-    public TextMeshProUGUI teksTombolInteract; 
+    public Button interactButton; 
+    public TextMeshProUGUI interactButtonText; 
+    public Button backButton; 
+
+    [Header("Door Status")]
+    public Sprite closedDoorSprite; 
+    public Sprite emptyCorridorSprite; // Gambar pas Stage 0 (Aman)
+
+    [Header("Monster Stages (Isi yang ada aja)")]
+    public Sprite stage1Sprite; 
+    public Sprite stage2Sprite; 
+    public Sprite stage3Sprite; 
     
-    // SLOT BARU: Buat masukin tombol Back
-    public Button tombolBack; 
+    [Header("Danger (Max Stage)")]
+    public Sprite monsterAtDoorSprite; // Gambar pas monster siap nerkam
 
-    [Header("Sprite / Foto")]
-    public Sprite fotoPintuTutup;
-    public Sprite fotoLorongKosong;
-    public Sprite fotoMonster;
-
-    private bool isPintuTerbuka = false; 
+    private bool isDoorOpen = false; 
 
     public void OnClickOpenDoor()
     {
-        if (!isPintuTerbuka)
+        if (!isDoorOpen)
         {
+            // Jika monster belum di depan pintu (belum Max Stage)
             if (monsterAI.currentStage < monsterAI.maxStage)
             {
-                // Aman, lorong kosong
-                doorViewImage.sprite = fotoLorongKosong;
+                // Sistem Slot Pintar: Tentukan gambar berdasarkan stage saat ini
+                switch (monsterAI.currentStage)
+                {
+                    case 0:
+                        doorViewImage.sprite = emptyCorridorSprite;
+                        break;
+                    case 1:
+                        // Kalau stage1 kosong, pakai gambar lorong kosong
+                        doorViewImage.sprite = stage1Sprite != null ? stage1Sprite : emptyCorridorSprite;
+                        break;
+                    case 2:
+                        // Kalau stage2 kosong, pakai gambar stage1
+                        doorViewImage.sprite = stage2Sprite != null ? stage2Sprite : stage1Sprite;
+                        break;
+                    case 3:
+                        // Kalau stage3 kosong, pakai gambar stage2
+                        doorViewImage.sprite = stage3Sprite != null ? stage3Sprite : stage2Sprite;
+                        break;
+                    default:
+                        doorViewImage.sprite = emptyCorridorSprite;
+                        break;
+                }
             }
+            // Jika monster sudah di depan pintu (Max Stage)
             else if (monsterAI.currentStage == monsterAI.maxStage)
             {
-                // JUMPSCARE PIGAI! Tunjukin foto monster dan mulai siksaan
-                doorViewImage.sprite = fotoMonster;
+                doorViewImage.sprite = monsterAtDoorSprite;
                 StartCoroutine(StaredownRoutine());
             }
             
-            isPintuTerbuka = true;
-            if (teksTombolInteract != null) teksTombolInteract.text = "Tutup"; 
+            isDoorOpen = true;
+            if (interactButtonText != null) interactButtonText.text = "Close"; 
         }
         else 
         {
-            doorViewImage.sprite = fotoPintuTutup;
-            isPintuTerbuka = false;
-            if (teksTombolInteract != null) teksTombolInteract.text = "Buka"; 
+            doorViewImage.sprite = closedDoorSprite;
+            isDoorOpen = false;
+            if (interactButtonText != null) interactButtonText.text = "Open"; 
         }
     }
 
     IEnumerator StaredownRoutine()
     {
-        // KUNCI SEMUA TOMBOL: Player ga bisa nutup pintu ATAU kabur ke 3D
-        if (tombolInteract != null) tombolInteract.interactable = false;
-        if (tombolBack != null) tombolBack.interactable = false;
+        // Kunci semua tombol biar player ga bisa kabur
+        if (interactButton != null) interactButton.interactable = false;
+        if (backButton != null) backButton.interactable = false;
 
-        // Player dipaksa natap muka monsternya selama 1.5 detik
+        // Tatapan maut 1.5 detik
         yield return new WaitForSeconds(1.5f);
 
-        // Usir monster
         monsterAI.RepelMonster();
         
-        // Ganti gambar jadi lorong kosong
-        doorViewImage.sprite = fotoLorongKosong;
+        // Kembalikan pemandangan ke Stage 0 (Lorong Kosong)
+        doorViewImage.sprite = emptyCorridorSprite;
         
-        // BUKA KUNCI SEMUA TOMBOL: Player udah bisa kabur atau nutup pintu
-        if (tombolInteract != null) tombolInteract.interactable = true;
-        if (tombolBack != null) tombolBack.interactable = true;
+        // Buka kunci tombol
+        if (interactButton != null) interactButton.interactable = true;
+        if (backButton != null) backButton.interactable = true;
     }
 
     public void ResetView()
     {
-        doorViewImage.sprite = fotoPintuTutup;
-        isPintuTerbuka = false;
+        doorViewImage.sprite = closedDoorSprite;
+        isDoorOpen = false;
         
-        // Reset semua tombol ke kondisi awal tiap kali player baru ngintip
-        if (teksTombolInteract != null) teksTombolInteract.text = "Buka";
-        if (tombolInteract != null) tombolInteract.interactable = true; 
-        if (tombolBack != null) tombolBack.interactable = true; 
+        if (interactButtonText != null) interactButtonText.text = "Open";
+        if (interactButton != null) interactButton.interactable = true; 
+        if (backButton != null) backButton.interactable = true; 
     }
 }
