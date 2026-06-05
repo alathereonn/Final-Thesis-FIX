@@ -1,8 +1,10 @@
+using System.Collections;
+using System.Collections.Generic; // KABEL BARU BUAT SISTEM NGACAK
 using UnityEngine;
 using TMPro; 
 using UnityEngine.SceneManagement; 
 
-// 1. DATA STRUCTURE (Mesti di luar class GameManager biar kebaca Unity)
+// 1. DATA STRUCTURE
 [System.Serializable]
 public class NightSettings
 {
@@ -13,22 +15,29 @@ public class NightSettings
 
 public class GameManager : MonoBehaviour
 {
+    [Header("Intro Transition")]
+    public GameObject introCanvas;
+    public TextMeshProUGUI introText;
+
     [Header("Win Condition (UAS/Sempro)")]
-    public bool requireFullProgress = true;  // Dulu: wajib100Persen
+    public bool requireFullProgress = true;  
     public LaptopManager laptopManager; 
 
     [Header("UI Canvas")]
     public GameObject winCanvas; 
-    public GameObject gameOverCanvas; 
+    public GameObject gameOverCanvas;
+
+    [Header("Player")]
+    public SC_FPSController fpsController;
     
     [Header("All Monsters (Employees)")]
     public MonsterAI doorMonster;
-    public MonsterAI windowMonster;   // KABEL BARU
-    public MonsterAI toiletMonster;   // KABEL BARU
+    public MonsterAI windowMonster;   
+    public MonsterAI toiletMonster;   
 
     [Header("Night Configuration")]
     public int currentNight = 1;
-    public NightSettings[] nightSettings = new NightSettings[6]; // ARRAY 6 MALAM
+    public NightSettings[] nightSettings = new NightSettings[6]; 
 
     [Header("Time Settings")]
     public TextMeshProUGUI timeText;
@@ -36,13 +45,33 @@ public class GameManager : MonoBehaviour
     
     private int currentHour = 12; 
     private float hourTimer = 0f;
+    
+    // SAKLAR WAKTU BARU
+    private bool is2AMTriggered = false; 
     private bool is3AMTriggered = false;
 
     void Start()
     {
-        ApplyNightSettings(); // Terapkan level AI pas game mulai
+        StartCoroutine(PlayIntroRoutine());
+
+        ApplyNightSettings(); 
         UpdateTimeUI();
         Debug.Log($"GAME STARTED: Night {currentNight} - 12 AM");
+    }
+
+    IEnumerator PlayIntroRoutine()
+    {
+        Time.timeScale = 0f; 
+        
+        if (introCanvas != null) introCanvas.SetActive(true);
+        if (introText != null) introText.text = "NIGHT " + currentNight;
+
+        yield return new WaitForSecondsRealtime(3f);
+
+        if (introCanvas != null) introCanvas.SetActive(false);
+        Time.timeScale = 1f;
+
+        Debug.Log("[GAME] Intro selesai, selamat mengerjakan skripsi!");
     }
 
     void Update()
@@ -66,17 +95,38 @@ public class GameManager : MonoBehaviour
         UpdateTimeUI();
         Debug.Log($"TIME UPDATE: It is now {currentHour} AM");
 
-        // Jam 3 pagi: Setan pintu ngamuk dikit
+        // --- SISTEM BUFF AI DINAMIS (JAM 2 & JAM 3 PAGI) ---
+
+        // Cek Jam 2 Pagi
+        if (currentHour == 2 && !is2AMTriggered)
+        {
+            is2AMTriggered = true;
+            if (currentNight == 1)
+            {
+                IncreaseRandomMonsters(2, 1); 
+                Debug.Log("[DANGER] 2 AM (Night 1)! 2 Random Monsters got +1 AI!");
+            }
+        }
+
+        // Cek Jam 3 Pagi
         if (currentHour == 3 && !is3AMTriggered)
         {
-            if (doorMonster != null) doorMonster.aiLevel += 3; 
-            Debug.Log($"[DANGER] 3 AM! Door Monster AI Level increased!");
             is3AMTriggered = true;
+            if (currentNight == 1)
+            {
+                IncreaseAllMonsters(2); 
+                Debug.Log("[DANGER] 3 AM (Night 1)! ALL Monsters got +2 AI!");
+            }
+            else if (currentNight >= 2 && currentNight <= 4)
+            {
+                IncreaseRandomMonsters(2, 2); 
+                Debug.Log($"[DANGER] 3 AM (Night {currentNight})! 2 Random Monsters got +2 AI!");
+            }
+            // Night 5 dan 6 diabaikan sesuai request lu
         }
 
         if (currentHour == 6)
         {
-            // STOP SEMUA SETAN BIAR GA ADA YANG NYERANG PAS MENANG
             if (doorMonster != null) doorMonster.StopAllCoroutines(); 
             if (windowMonster != null) windowMonster.StopAllCoroutines(); 
             if (toiletMonster != null) toiletMonster.StopAllCoroutines(); 
@@ -102,12 +152,48 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // --- FUNGSI BARU: TERAPKAN AI LEVEL ---
+    // --- FUNGSI PEMBANTU BUAT NAIKIN LEVEL AI ---
+
+    void IncreaseAllMonsters(int amount)
+    {
+        if (doorMonster != null) doorMonster.aiLevel += amount;
+        if (windowMonster != null) windowMonster.aiLevel += amount;
+        if (toiletMonster != null) toiletMonster.aiLevel += amount;
+    }
+
+    void IncreaseRandomMonsters(int count, int amount)
+    {
+        // 1. Masukin semua monster yang aktif ke dalam List
+        List<MonsterAI> activeMonsters = new List<MonsterAI>();
+        if (doorMonster != null) activeMonsters.Add(doorMonster);
+        if (windowMonster != null) activeMonsters.Add(windowMonster);
+        if (toiletMonster != null) activeMonsters.Add(toiletMonster);
+
+        // 2. Kalau jumlah slot monster kurang dari target ngacaknya, naikin aja semua
+        if (activeMonsters.Count <= count)
+        {
+            foreach (var m in activeMonsters) m.aiLevel += amount;
+            return;
+        }
+
+        // 3. Sistem Cabut Undian!
+        for (int i = 0; i < count; i++)
+        {
+            // Pilih satu index acak dari sisa monster yang ada di List
+            int randIndex = Random.Range(0, activeMonsters.Count);
+            
+            // Kasih buff ke monster terpilih
+            activeMonsters[randIndex].aiLevel += amount;
+            
+            // Hapus monster itu dari List biar ga terpilih 2 kali
+            activeMonsters.RemoveAt(randIndex); 
+        }
+    }
+
     void ApplyNightSettings()
     {
-        int index = currentNight - 1; // Array mulai dari 0
+        int index = currentNight - 1; 
 
-        // Cegah error kalau array belum diisi
         if (index >= 0 && index < nightSettings.Length)
         {
             if (doorMonster != null) doorMonster.aiLevel = nightSettings[index].doorAiLevel;
@@ -118,13 +204,14 @@ public class GameManager : MonoBehaviour
         }
     }
 
-    // Dulu: MenangGame()
     void WinGame()
     {
         if (winCanvas != null) winCanvas.SetActive(true);
         Time.timeScale = 0f; 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        if (fpsController != null) fpsController.enabled = false;
     }
 
     public void GameOver()
@@ -133,6 +220,8 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f; 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
+
+        if (fpsController != null) fpsController.enabled = false;
     }
 
     void UpdateTimeUI()
