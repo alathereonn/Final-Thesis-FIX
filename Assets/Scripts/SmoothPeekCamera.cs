@@ -9,7 +9,6 @@ public class SmoothPeekCamera : MonoBehaviour
     public Transform defaultCameraPos; 
     public SC_FPSController fpsController; 
     
-    // TAMPILAN BARU: Slot buat masukin UI Canvas 2D
     [Header("UI 2D")]
     public GameObject peekCanvas; 
 
@@ -20,39 +19,96 @@ public class SmoothPeekCamera : MonoBehaviour
     private Coroutine activeTransition; 
     private bool isAtDoor = false;     
 
-    // Dipanggil dari raycast pas ngeklik pintu 3D
     public void InteractWithDoor()
     {
-        // FIX BUG SPAM KLIK: Kalau kamera lagi gerak, cuekin aja kliknya
-        if (activeTransition != null) return; 
+        if (activeTransition != null) return; // Cegah spam klik
 
         if (!isAtDoor)
         {
-            // MENGINTIP: Matiin pergerakan player
-            if (fpsController != null) fpsController.canMove = false;
+            if (fpsController != null) fpsController.canMove = false; // Kunci player
             
-            activeTransition = StartCoroutine(MoveCamera(defaultCameraPos, doorAnchor, false));
+            // MULAI ALUR MASUK
+            activeTransition = StartCoroutine(EnterPeekSequence());
             peekCanvas.GetComponent<Door2DManager>().ResetView();
-            
             isAtDoor = true;
         }
     }
 
-    // FUNGSI BARU: Dipanggil pas ngeklik tombol "Back" di layar 2D
     public void StopPeeking()
     {
-        // FIX BUG SPAM KLIK: Kalau kamera lagi gerak, cuekin aja kliknya
-        if (activeTransition != null) return; 
+        if (activeTransition != null) return; // Cegah spam klik
         
-        // Langsung matiin Canvas 2D biar layar bersih
-        if (peekCanvas != null) peekCanvas.SetActive(false);
-
-        // Kamera mundur balik ke posisi player
-        activeTransition = StartCoroutine(MoveCamera(doorAnchor, defaultCameraPos, true));
+        // MULAI ALUR KELUAR
+        activeTransition = StartCoroutine(ExitPeekSequence());
         isAtDoor = false;
     }
 
-    IEnumerator MoveCamera(Transform start, Transform target, bool isReturning)
+    // --- ALUR HIBRIDA MASUK ---
+    IEnumerator EnterPeekSequence()
+    {
+        // 1. Kamera Pindah Dulu
+        yield return StartCoroutine(MoveCameraOnly(defaultCameraPos, doorAnchor));
+
+        // 2. Kamera Nyampe -> Layar Gelap -> Muncul 2D Canvas -> Terang Lagi
+        if (FadeManager.instance != null)
+        {
+            FadeManager.instance.DoTransition(
+                midAction: () => {
+                    if (peekCanvas != null) peekCanvas.SetActive(true);
+                    Cursor.lockState = CursorLockMode.None; 
+                    Cursor.visible = true; 
+                },
+                onComplete: () => {
+                    activeTransition = null; // Transisi selesai total
+                }
+            );
+        }
+        else // Fallback kalau lu lupa pasang FadeManager
+        {
+            if (peekCanvas != null) peekCanvas.SetActive(true);
+            Cursor.lockState = CursorLockMode.None; 
+            Cursor.visible = true; 
+            activeTransition = null;
+        }
+    }
+
+    // --- ALUR HIBRIDA KELUAR ---
+    IEnumerator ExitPeekSequence()
+    {
+        Cursor.lockState = CursorLockMode.Locked; 
+        Cursor.visible = false; 
+
+        // 1. Layar Gelap -> Ilangin 2D Canvas -> Layar Terang Lagi
+        if (FadeManager.instance != null)
+        {
+            FadeManager.instance.DoTransition(
+                midAction: () => {
+                    if (peekCanvas != null) peekCanvas.SetActive(false);
+                },
+                onComplete: () => {
+                    // 2. Pas Layar UDAH TERANG, baru Kamera Mundur
+                    StartCoroutine(MoveCameraBackAndFinish());
+                }
+            );
+        }
+        else
+        {
+            if (peekCanvas != null) peekCanvas.SetActive(false);
+            StartCoroutine(MoveCameraBackAndFinish());
+        }
+        yield return null;
+    }
+
+    IEnumerator MoveCameraBackAndFinish()
+    {
+        yield return StartCoroutine(MoveCameraOnly(doorAnchor, defaultCameraPos));
+        
+        if (fpsController != null) fpsController.canMove = true;
+        activeTransition = null; // Transisi selesai total
+    }
+
+    // Mesin Penggerak Kamera Murni 
+    IEnumerator MoveCameraOnly(Transform start, Transform target)
     {
         float elapsedTime = 0f;
         Vector3 startPos = start.position;
@@ -73,25 +129,5 @@ public class SmoothPeekCamera : MonoBehaviour
 
         playerCamera.position = targetPos;
         playerCamera.rotation = targetRot;
-
-        // LOGIKA SETELAH KAMERA SELESAI GERAK:
-        if (!isReturning)
-        {
-            // Kalau baru nyampe pintu: Nyalain Layar 2D & Bebasin Mouse
-            if (peekCanvas != null) peekCanvas.SetActive(true);
-            
-            Cursor.lockState = CursorLockMode.None; // Buka kunci mouse
-            Cursor.visible = true; // Munculin kursor mouse
-        }
-        else
-        {
-            // Kalau udah balik ke badan player: Idupin pergerakan & Kunci Mouse
-            if (fpsController != null) fpsController.canMove = true;
-            
-            Cursor.lockState = CursorLockMode.Locked; // Kunci mouse ke tengah (ala FPS)
-            Cursor.visible = false; // Sembunyiin kursor
-        }
-
-        activeTransition = null;
     }
 }
