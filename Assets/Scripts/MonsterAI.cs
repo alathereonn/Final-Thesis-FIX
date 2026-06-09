@@ -30,9 +30,11 @@ public class MonsterAI : MonoBehaviour
 
     private Coroutine aiMovementCoroutine;
     private Coroutine jumpscareTimerCoroutine; 
+    private static bool hasPlayedFirstStageDialog = false;
 
     void Start()
     {
+        hasPlayedFirstStageDialog = false; // Reset tiap kali malam baru dimulai
         aiMovementCoroutine = StartCoroutine(ProcessMovementRNG());
     }
 
@@ -57,6 +59,17 @@ public class MonsterAI : MonoBehaviour
     {
         currentStage++;
         Debug.Log($"[TENSION] {monsterName} advanced to Stage {currentStage}!");
+
+        if (!hasPlayedFirstStageDialog)
+        {
+            hasPlayedFirstStageDialog = true; // Langsung dikunci biar monster lain ga ikutan
+            
+            // Panggil monolognya (Pastikan script MonologueManager abang udah terpasang ya)
+            if (MonologueManager.instance != null)
+            {
+                MonologueManager.instance.ShowMonologue("Perasaan tadi gue udah kunci pintu deh...", 3f);
+            }
+        }
 
         if (audioSource != null && stepSound != null)
         {

@@ -9,6 +9,10 @@ public class LaptopManager : MonoBehaviour
     public TextMeshProUGUI targetWordText;
     public Slider progressBar;
 
+    [Header("UI Canvas")]
+    public GameObject winCanvas; 
+    public GameObject gameOverCanvas;
+
     [Header("Gameplay Settings")]
     public string fileName = "kamus_sempro"; // Nama file txt lu tanpa .txt
     [Range(0, 100)]
