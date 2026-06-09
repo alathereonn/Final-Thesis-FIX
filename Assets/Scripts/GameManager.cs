@@ -135,6 +135,37 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // --- FUNGSI BARU: SMS OTOMATIS PAS AWAL MALAM ---
+    void SendStartNightSMS()
+    {
+        if (PhoneManager.instance == null) return;
+
+        switch (currentNight)
+        {
+            case 1:
+                PhoneManager.instance.ReceiveSMS("Raihandy", "Bro, ntar kalau Bab 1 udah kelar, langsung upload ke Drive kelompok ya. Ditunggu Ade Putri nih buat digabung.");
+                break;
+            case 2:
+                PhoneManager.instance.ReceiveSMS("Andi", "Gila, dapet info dari kelas sebelah, katanya dosen penguji sempro besok killer banget. Lu mending kelarin malam ini bro.");
+                break;
+            case 3:
+                PhoneManager.instance.ReceiveSMS("Ade Putri", "Andi sama Raihandy nanyain jobdesk backend-nya udah sampe mana? Tolong buruan di-push ke repisitori ya.");
+                break;
+            case 4:
+                PhoneManager.instance.ReceiveSMS("Dosen Pembimbing", "Saya sudah cek bab metodologi kamu. Masih banyak yang kurang tepat, tolong perbaiki malam ini.");
+                break;
+            case 5:
+                PhoneManager.instance.ReceiveSMS("Raihandy", "Bro, lu aman kan di kamar? Kok grup angkatan rame katanya ada yang aneh di sekitar kampus malam-malam gini.");
+                break;
+            case 6:
+                PhoneManager.instance.ReceiveSMS("Nomor Tidak Dikenal", "MATIKAN LAPTOPNYA SEKARANG. JANGAN LIHAT KE BELAKANG.");
+                break;
+            default:
+                PhoneManager.instance.ReceiveSMS("Sistem", "Selamat mengerjakan tugas akhir.");
+                break;
+        }
+    }
+
     IEnumerator PlayIntroRoutine()
     {
         Time.timeScale = 0f; 
@@ -148,6 +179,7 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 1f;
 
         Debug.Log("[GAME] Intro selesai, selamat mengerjakan skripsi!");
+        SendStartNightSMS();
     }
 
     void Update()

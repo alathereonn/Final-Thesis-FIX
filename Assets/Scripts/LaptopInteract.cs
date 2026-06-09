@@ -45,6 +45,11 @@ public class LaptopInteract : MonoBehaviour
         isInteracting = true;
         fpsController.enabled = false; // Matiin jalan di awal zoom biar gak lari-lari
 
+        if (PhoneManager.instance != null)
+        {
+            PhoneManager.instance.ForceHidePhone();
+        }
+
         // 1. Simpan posisi dan rotasi awal kamera buat nanti balik
         originalCamPosition = playerCamera.position;
         originalCamRotation = playerCamera.rotation;
@@ -93,6 +98,11 @@ public class LaptopInteract : MonoBehaviour
 
         // 3. Zoom Out Selesai, Balikin Kontrol Player
         isInteracting = false;
-        fpsController.enabled = true; 
+        fpsController.enabled = true;
+        
+        if (PhoneManager.instance != null)
+        {
+            PhoneManager.instance.AllowPhoneUsage();
+        }
     }
 }

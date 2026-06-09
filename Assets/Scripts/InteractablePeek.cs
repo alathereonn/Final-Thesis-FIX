@@ -9,6 +9,10 @@ public class InteractablePeek : MonoBehaviour
     {
         if (cameraSystem != null)
         {
+            if (PhoneManager.instance != null)
+            {
+                PhoneManager.instance.ForceHidePhone();
+            }
             cameraSystem.InteractWithDoor();
         }
     }

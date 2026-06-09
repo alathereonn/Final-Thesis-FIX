@@ -102,8 +102,10 @@ public class SmoothPeekCamera : MonoBehaviour
     IEnumerator MoveCameraBackAndFinish()
     {
         yield return StartCoroutine(MoveCameraOnly(doorAnchor, defaultCameraPos));
-        
-        if (fpsController != null) fpsController.canMove = true;
+        if (fpsController != null) fpsController.canMove = true;if (PhoneManager.instance != null)
+        {
+            PhoneManager.instance.AllowPhoneUsage();
+        }
         activeTransition = null; // Transisi selesai total
     }
 
