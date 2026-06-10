@@ -18,6 +18,10 @@ public class PhoneManager : MonoBehaviour
     public Vector2 hiddenPosition = new Vector2(0, -600f); // Posisi Y saat HP ngumpet di bawah
     public Vector2 visiblePosition = new Vector2(0, 0f);   // Posisi Y saat HP nampil di layar
 
+    [Header("Instruction Settings")]
+    [Tooltip("Berapa lama teks instruksi muncul sebelum hilang otomatis")]
+    public float instructionDuration = 4f; // <--- TAMBAHAN: Durasi teks instruksi nampil (bisa diganti di inspector)
+
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip notifSound;
@@ -27,6 +31,7 @@ public class PhoneManager : MonoBehaviour
     private bool isPhoneActive = false;
     private RectTransform phoneRect;
     private Coroutine activeAnim;
+    private Coroutine instructionFadeCor; // <--- TAMBAHAN: Buat nge-track coroutine timer instruksi
 
     void Awake()
     {
@@ -38,6 +43,8 @@ public class PhoneManager : MonoBehaviour
     {
         canUsePhone = true; 
         activeAnim = null;
+        instructionFadeCor = null; // <--- TAMBAHAN
+        
         // Ambil komponen RectTransform dari HP abang buat digerak-gerakin
         if (phoneUI != null)
         {
@@ -71,9 +78,18 @@ public class PhoneManager : MonoBehaviour
             audioSource.PlayOneShot(notifSound);
         }
 
+        // --- MODIFIKASI DI SINI ---
         if (instructionUI != null && !isPhoneActive)
         {
             instructionUI.SetActive(true);
+
+            // Kalau sebelumnya udah ada timer yang jalan (misal dapet SMS beruntun), reset dulu timernya
+            if (instructionFadeCor != null) 
+            {
+                StopCoroutine(instructionFadeCor);
+            }
+            // Mulai timer baru buat matiin teks otomatis
+            instructionFadeCor = StartCoroutine(HideInstructionAfterDelay(instructionDuration));
         }
     }
 
@@ -88,6 +104,13 @@ public class PhoneManager : MonoBehaviour
             // --- BARIS INI YANG BERTUGAS MEMATIKAN TEKSNYA ---
             if (instructionUI != null) instructionUI.SetActive(false);
             
+            // TAMBAHAN: Stop timer instruksi kalau HP dibuka manual sebelum timernya habis
+            if (instructionFadeCor != null)
+            {
+                StopCoroutine(instructionFadeCor);
+                instructionFadeCor = null;
+            }
+            
             phoneUI.SetActive(true);
             activeAnim = StartCoroutine(SlidePhoneAnim(visiblePosition, false));
         }
@@ -95,6 +118,17 @@ public class PhoneManager : MonoBehaviour
         {
             activeAnim = StartCoroutine(SlidePhoneAnim(hiddenPosition, true));
         }
+    }
+
+    // --- TAMBAHAN: Coroutine baru untuk nunggu beberapa detik lalu matiin instruksi ---
+    IEnumerator HideInstructionAfterDelay(float delay)
+    {
+        yield return new WaitForSeconds(delay);
+        if (instructionUI != null) 
+        {
+            instructionUI.SetActive(false);
+        }
+        instructionFadeCor = null; // Kosongkan track-nya setelah selesai
     }
 
     IEnumerator SlidePhoneAnim(Vector2 targetPos, bool disableAfter)
@@ -135,6 +169,13 @@ public class PhoneManager : MonoBehaviour
             
             if (phoneUI != null) phoneUI.SetActive(false);
             if (phoneRect != null) phoneRect.anchoredPosition = hiddenPosition; // Kembalikan ke bawah
+        }
+
+        // TAMBAHAN: Stop timer juga kalau di-force hide
+        if (instructionFadeCor != null)
+        {
+            StopCoroutine(instructionFadeCor);
+            instructionFadeCor = null;
         }
 
         if (instructionUI != null) instructionUI.SetActive(false); // Sembunyikan teks "Tekan E"

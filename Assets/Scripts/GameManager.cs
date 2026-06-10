@@ -1,10 +1,9 @@
 using System.Collections;
-using System.Collections.Generic; // KABEL BARU BUAT SISTEM NGACAK
+using System.Collections.Generic; 
 using UnityEngine;
 using TMPro; 
 using UnityEngine.SceneManagement; 
 
-// 1. DATA STRUCTURE
 [System.Serializable]
 public class NightSettings
 {
@@ -26,7 +25,8 @@ public class GameManager : MonoBehaviour
     [Header("UI Canvas")]
     public GameObject winCanvas; 
     public GameObject gameOverCanvas;
-    public TextMeshProUGUI babTitleText; // <--- TAMBAHKAN KABEL INI
+    public GameObject goodEndingCanvas; // <--- KABEL BARU BUAT NIGHT 6
+    public TextMeshProUGUI babTitleText; 
 
     [Header("Player")]
     public SC_FPSController fpsController;
@@ -47,56 +47,45 @@ public class GameManager : MonoBehaviour
     private int currentHour = 12; 
     private float hourTimer = 0f;
     
-    // SAKLAR WAKTU BARU
     private bool is2AMTriggered = false; 
     private bool is3AMTriggered = false;
+
+    // --- FUNGSI BARU: BACA DATA SEBELUM START ---
+    void Awake()
+    {
+        // Narik data dari Main Menu buat nentuin sekarang main malam ke berapa
+        currentNight = PlayerPrefs.GetInt("CurrentPlayNight", 1);
+    }
 
     void Start()
     {
         StartCoroutine(PlayIntroRoutine());
         PlayIntroDialogue();
-        // MonologueManager.instance.ShowMonologue("Hadeh... revisian TA ini nggak kelar-kelar, mana deadline besok.", 4f);
         UpdateBabTitle();
         ApplyNightSettings(); 
         UpdateTimeUI();
         Debug.Log($"GAME STARTED: Night {currentNight} - 12 AM");
     }
 
-    // --- FUNGSI BARU BUAT DIALOG TIAP MALAM ---
     void PlayIntroDialogue()
     {
         string dialogMessage = "";
         float displayTime = 4f;
 
-        // Tentukan teks berdasarkan malam ke berapa
         switch (currentNight)
         {
-            case 1:
-                dialogMessage = "Hadeh... revisian TA ini nggak kelar-kelar, mana deadline besok.";
+            case 1: dialogMessage = "Hadeh... revisian TA ini nggak kelar-kelar, mana deadline besok."; break;
+            case 2: dialogMessage = "Semalam perasaan ada yang aneh... Ah udahlah, mending fokus ngetik Bab 2."; break;
+            case 3: dialogMessage = "Udah malam ketiga... Kenapa hawanya di kamar ini makin ga enak ya?"; break;
+            case 4: dialogMessage = "Bodo amat sama suara-suara itu, kalau TA ga kelar gue bisa DO!"; break;
+            case 5: dialogMessage = "Tinggal dikit lagi... Gue ga boleh mati konyol sebelum sidang!"; break;
+            case 6: 
+                dialogMessage = "Malam penentuan... Selesaiin program ini sekarang, atau terjebak selamanya!"; 
+                displayTime = 5f; 
                 break;
-            case 2:
-                dialogMessage = "Semalam perasaan ada yang aneh... Ah udahlah, mending fokus ngetik Bab 2.";
-                break;
-            case 3:
-                dialogMessage = "Udah malam ketiga... Kenapa hawanya di kamar ini makin ga enak ya?";
-                break;
-            case 4:
-                dialogMessage = "Bodo amat sama suara-suara itu, kalau TA ga kelar gue bisa DO!";
-                break;
-            case 5:
-                dialogMessage = "Tinggal dikit lagi... Gue ga boleh mati konyol sebelum sidang!";
-                break;
-            case 6:
-                dialogMessage = "Malam penentuan... Selesaiin program ini sekarang, atau terjebak selamanya!";
-                displayTime = 5f; // Kasih waktu lebih lama dikit buat dibaca karena panjang
-                break;
-            default:
-                dialogMessage = "Lanjut nugas..."; // Jaga-jaga kalau ada bug nyasar ke malam 7
-                displayTime = 3f;
-                break;
+            default: dialogMessage = "Lanjut nugas..."; displayTime = 3f; break;
         }
 
-        // Tampilkan ke layar pakai sistem Singleton yang udah kita buat
         if (MonologueManager.instance != null)
         {
             MonologueManager.instance.ShowMonologue(dialogMessage, displayTime);
@@ -105,64 +94,33 @@ public class GameManager : MonoBehaviour
 
     void UpdateBabTitle()
     {
-        // Kalau kabelnya lupa dipasang di Inspector, biar nggak error
         if (babTitleText == null) return; 
 
         switch (currentNight)
         {
-            case 1:
-                babTitleText.text = "BAB I\nPENDAHULUAN";
-                break;
-            case 2:
-                babTitleText.text = "BAB II\nTINJAUAN PUSTAKA";
-                break;
-            case 3:
-                babTitleText.text = "BAB III\nMETODOLOGI PENELITIAN";
-                break;
-            case 4:
-                babTitleText.text = "BAB IV\nIMPLEMENTASI SISTEM";
-                break;
-            case 5:
-                babTitleText.text = "BAB V\nHASIL DAN UJI COBA";
-                break;
-            case 6:
-                babTitleText.text = "BAB VI\nKESIMPULAN DAN SARAN"; 
-                // Malam bos terakhir, selesain kesimpulan!
-                break;
-            default:
-                babTitleText.text = "DRAFT TA\nREVISI FINAL V2";
-                break;
+            case 1: babTitleText.text = "BAB I\nPENDAHULUAN"; break;
+            case 2: babTitleText.text = "BAB II\nTINJAUAN PUSTAKA"; break;
+            case 3: babTitleText.text = "BAB III\nMETODOLOGI PENELITIAN"; break;
+            case 4: babTitleText.text = "BAB IV\nIMPLEMENTASI SISTEM"; break;
+            case 5: babTitleText.text = "BAB V\nHASIL DAN UJI COBA"; break;
+            case 6: babTitleText.text = "BAB VI\nKESIMPULAN DAN SARAN"; break;
+            default: babTitleText.text = "DRAFT TA\nREVISI FINAL V2"; break;
         }
     }
 
-    // --- FUNGSI BARU: SMS OTOMATIS PAS AWAL MALAM ---
     void SendStartNightSMS()
     {
         if (PhoneManager.instance == null) return;
 
         switch (currentNight)
         {
-            case 1:
-                PhoneManager.instance.ReceiveSMS("Raihandy", "Bro, ntar kalau Bab 1 udah kelar, langsung upload ke Drive kelompok ya. Ditunggu Ade Putri nih buat digabung.");
-                break;
-            case 2:
-                PhoneManager.instance.ReceiveSMS("Andi", "Gila, dapet info dari kelas sebelah, katanya dosen penguji sempro besok killer banget. Lu mending kelarin malam ini bro.");
-                break;
-            case 3:
-                PhoneManager.instance.ReceiveSMS("Ade Putri", "Andi sama Raihandy nanyain jobdesk backend-nya udah sampe mana? Tolong buruan di-push ke repisitori ya.");
-                break;
-            case 4:
-                PhoneManager.instance.ReceiveSMS("Dosen Pembimbing", "Saya sudah cek bab metodologi kamu. Masih banyak yang kurang tepat, tolong perbaiki malam ini.");
-                break;
-            case 5:
-                PhoneManager.instance.ReceiveSMS("Raihandy", "Bro, lu aman kan di kamar? Kok grup angkatan rame katanya ada yang aneh di sekitar kampus malam-malam gini.");
-                break;
-            case 6:
-                PhoneManager.instance.ReceiveSMS("Nomor Tidak Dikenal", "MATIKAN LAPTOPNYA SEKARANG. JANGAN LIHAT KE BELAKANG.");
-                break;
-            default:
-                PhoneManager.instance.ReceiveSMS("Sistem", "Selamat mengerjakan tugas akhir.");
-                break;
+            case 1: PhoneManager.instance.ReceiveSMS("Raihandy", "Bro, ntar kalau Bab 1 udah kelar, langsung upload ke Drive kelompok ya. Ditunggu Ade Putri nih buat digabung."); break;
+            case 2: PhoneManager.instance.ReceiveSMS("Andi", "Gila, dapet info dari kelas sebelah, katanya dosen penguji sempro besok killer banget. Lu mending kelarin malam ini bro."); break;
+            case 3: PhoneManager.instance.ReceiveSMS("Ade Putri", "Andi sama Raihandy nanyain jobdesk backend-nya udah sampe mana? Tolong buruan di-push ke repisitori ya."); break;
+            case 4: PhoneManager.instance.ReceiveSMS("Dosen Pembimbing", "Saya sudah cek bab metodologi kamu. Masih banyak yang kurang tepat, tolong perbaiki malam ini."); break;
+            case 5: PhoneManager.instance.ReceiveSMS("Raihandy", "Bro, lu aman kan di kamar? Kok grup angkatan rame katanya ada yang aneh di sekitar kampus malam-malam gini."); break;
+            case 6: PhoneManager.instance.ReceiveSMS("Nomor Tidak Dikenal", "MATIKAN LAPTOPNYA SEKARANG. JANGAN LIHAT KE BELAKANG."); break;
+            default: PhoneManager.instance.ReceiveSMS("Sistem", "Selamat mengerjakan tugas akhir."); break;
         }
     }
 
@@ -203,34 +161,17 @@ public class GameManager : MonoBehaviour
         UpdateTimeUI();
         Debug.Log($"TIME UPDATE: It is now {currentHour} AM");
 
-        // --- SISTEM BUFF AI DINAMIS (JAM 2 & JAM 3 PAGI) ---
-
-        // Cek Jam 2 Pagi
         if (currentHour == 2 && !is2AMTriggered)
         {
             is2AMTriggered = true;
-            if (currentNight == 1)
-            {
-                IncreaseRandomMonsters(2, 1); 
-                Debug.Log("[DANGER] 2 AM (Night 1)! 2 Random Monsters got +1 AI!");
-            }
+            if (currentNight == 1) IncreaseRandomMonsters(2, 1); 
         }
 
-        // Cek Jam 3 Pagi
         if (currentHour == 3 && !is3AMTriggered)
         {
             is3AMTriggered = true;
-            if (currentNight == 1)
-            {
-                IncreaseAllMonsters(2); 
-                Debug.Log("[DANGER] 3 AM (Night 1)! ALL Monsters got +2 AI!");
-            }
-            else if (currentNight >= 2 && currentNight <= 4)
-            {
-                IncreaseRandomMonsters(2, 2); 
-                Debug.Log($"[DANGER] 3 AM (Night {currentNight})! 2 Random Monsters got +2 AI!");
-            }
-            // Night 5 dan 6 diabaikan sesuai request lu
+            if (currentNight == 1) IncreaseAllMonsters(2); 
+            else if (currentNight >= 2 && currentNight <= 4) IncreaseRandomMonsters(2, 2); 
         }
 
         if (currentHour == 6)
@@ -241,26 +182,15 @@ public class GameManager : MonoBehaviour
 
             if (requireFullProgress) 
             {
-                if (laptopManager.currentProgress < 100f)
-                {
-                    Debug.Log("Player did not reach 100% Progress! NT!");
-                    GameOver(); 
-                }
-                else 
-                {
-                    Debug.Log("Player reached 100% Progress! WIN!");
-                    WinGame(); 
-                }
+                if (laptopManager.currentProgress < 100f) GameOver(); 
+                else WinGame(); 
             }
             else 
             {
-                Debug.Log("🎉 6 AM! PLAYER SURVIVED!");                
                 WinGame(); 
             }
         }
     }
-
-    // --- FUNGSI PEMBANTU BUAT NAIKIN LEVEL AI ---
 
     void IncreaseAllMonsters(int amount)
     {
@@ -271,29 +201,21 @@ public class GameManager : MonoBehaviour
 
     void IncreaseRandomMonsters(int count, int amount)
     {
-        // 1. Masukin semua monster yang aktif ke dalam List
         List<MonsterAI> activeMonsters = new List<MonsterAI>();
         if (doorMonster != null) activeMonsters.Add(doorMonster);
         if (windowMonster != null) activeMonsters.Add(windowMonster);
         if (toiletMonster != null) activeMonsters.Add(toiletMonster);
 
-        // 2. Kalau jumlah slot monster kurang dari target ngacaknya, naikin aja semua
         if (activeMonsters.Count <= count)
         {
             foreach (var m in activeMonsters) m.aiLevel += amount;
             return;
         }
 
-        // 3. Sistem Cabut Undian!
         for (int i = 0; i < count; i++)
         {
-            // Pilih satu index acak dari sisa monster yang ada di List
             int randIndex = Random.Range(0, activeMonsters.Count);
-            
-            // Kasih buff ke monster terpilih
             activeMonsters[randIndex].aiLevel += amount;
-            
-            // Hapus monster itu dari List biar ga terpilih 2 kali
             activeMonsters.RemoveAt(randIndex); 
         }
     }
@@ -307,19 +229,36 @@ public class GameManager : MonoBehaviour
             if (doorMonster != null) doorMonster.aiLevel = nightSettings[index].doorAiLevel;
             if (windowMonster != null) windowMonster.aiLevel = nightSettings[index].windowAiLevel;
             if (toiletMonster != null) toiletMonster.aiLevel = nightSettings[index].toiletAiLevel;
-
-            Debug.Log($"[NIGHT {currentNight}] AI Levels applied from GameManager!");
         }
     }
 
+    // --- FUNGSI WIN GAME YANG DI-UPGRADE ---
     void WinGame()
     {
-        if (winCanvas != null) winCanvas.SetActive(true);
         Time.timeScale = 0f; 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
         if (fpsController != null) fpsController.enabled = false;
+
+        if (currentNight < 6)
+        {
+            // MENANG MALAM BIASA (1-5)
+            if (winCanvas != null) winCanvas.SetActive(true);
+            
+            // Catet prestasi di buku memori
+            int highestNight = PlayerPrefs.GetInt("HighestNight", 1);
+            if (currentNight + 1 > highestNight)
+            {
+                PlayerPrefs.SetInt("HighestNight", currentNight + 1);
+                PlayerPrefs.Save();
+            }
+        }
+        else
+        {
+            // TAMAT BOS! (MALAM 6)
+            if (goodEndingCanvas != null) goodEndingCanvas.SetActive(true);
+            // Gak usah nge-save plus satu lagi, biar mentok di 6
+        }
     }
 
     public void GameOver()
@@ -328,22 +267,39 @@ public class GameManager : MonoBehaviour
         Time.timeScale = 0f; 
         Cursor.lockState = CursorLockMode.None;
         Cursor.visible = true;
-
         if (fpsController != null) fpsController.enabled = false;
     }
 
     void UpdateTimeUI()
     {
-        if (timeText != null)
-        {
-            timeText.text = currentHour + " AM";
-        }
+        if (timeText != null) timeText.text = currentHour + " AM";
     }
 
     public void RestartGame()
     {
-        Debug.Log("RESTARTING GAME...");
         Time.timeScale = 1f;
         SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    // --- TOMBOL-TOMBOL NAVIGASI BARU ---
+
+    // Dicolok ke tombol "Next Night" di Win Canvas
+    public void NextNight()
+    {
+        Time.timeScale = 1f;
+        
+        // Atur agar ronde selanjutnya mainin malam berikutnya
+        PlayerPrefs.SetInt("CurrentPlayNight", currentNight + 1);
+        PlayerPrefs.Save();
+        
+        SceneManager.LoadScene(SceneManager.GetActiveScene().buildIndex);
+    }
+
+    // Dicolok ke tombol "Back to Menu" di Win/GameOver/GoodEnding Canvas
+    public void BackToMainMenu()
+    {
+        Time.timeScale = 1f;
+        // Ganti "MainMenu" pakai nama scene menu awal lu nanti
+        SceneManager.LoadScene("MainMenu"); 
     }
 }

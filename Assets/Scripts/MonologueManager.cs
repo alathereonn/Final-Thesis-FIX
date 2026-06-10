@@ -28,10 +28,10 @@ public class MonologueManager : MonoBehaviour
         }
     }
 
-    void Start()
-    {
-        if (subtitleText != null) subtitleText.text = ""; // Bersihkan layar di awal
-    }
+    // void Start()
+    // {
+    //     if (subtitleText != null) subtitleText.text = ""; // Bersihkan layar di awal
+    // }
 
     // Fungsi utama yang bakal dipanggil buat memunculkan teks
     public void ShowMonologue(string message, float duration = 0f)
