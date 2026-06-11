@@ -52,4 +52,19 @@ public class MainMenuManager : MonoBehaviour
 
         SceneManager.LoadScene("SampleScene");
     }
+
+    public void OpenOptionsScene()
+    {
+        SceneManager.LoadScene("OptionsMenu");
+    }
+
+    // Tambahkan fungsi ini di bawah fungsi OpenOptionsScene atau di mana saja di dalam class
+    public void QuitGame()
+    {
+        Debug.Log("Game sedang ditutup..."); // Log ini buat ngetes di Unity Editor
+        Application.Quit();
+    #if UNITY_EDITOR
+        UnityEditor.EditorApplication.isPlaying = false;
+    #endif
+    }
 }

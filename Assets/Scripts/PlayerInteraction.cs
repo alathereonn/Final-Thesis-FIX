@@ -1,6 +1,6 @@
 using UnityEngine;
 using UnityEngine.EventSystems; 
-using TMPro; // WAJIB DITAMBAHIN BUAT BACA TEKS UI
+using TMPro; 
 
 public class PlayerInteraction : MonoBehaviour
 {
@@ -9,26 +9,24 @@ public class PlayerInteraction : MonoBehaviour
     public Camera playerCamera;         
 
     [Header("UI Prompt")]
-    public TextMeshProUGUI promptText; // Tempat masang teks "Press to Open"
+    public TextMeshProUGUI promptText;
 
     void Update()
     {
-        // Garis merah bantuan di tab Scene
         Debug.DrawRay(playerCamera.transform.position, playerCamera.transform.forward * interactDistance, Color.red);
 
-        // 1. DEFAULT: Sembunyikan teks setiap saat (akan dinyalakan lagi di bawah kalau laser kena target)
+        // 1. DEFAULT: Sembunyikan teks setiap saat
         if (promptText != null) 
         {
             promptText.gameObject.SetActive(false);
         }
 
-        // LOGIKA SATPAM UI
         if (EventSystem.current != null && EventSystem.current.IsPointerOverGameObject())
         {
             return; 
         }
 
-        // 2. CEK SOROTAN LASER (Tampilin Teks kalau pas kena)
+        // 2. CEK SOROTAN LASER
         CheckHover();
 
         // 3. CEK KLIK UNTUK INTERAKSI
@@ -45,17 +43,25 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, interactDistance))
         {
-            // A. Kalau yang disorot punya script ngintip pintu
+            Debug.Log("LASER NABRAK: " + hit.collider.gameObject.name);
             if (hit.collider.GetComponent<InteractablePeek>() != null)
             {
                 ShowPrompt("[Left Click] to take a peek");
             }
-            // B. Kalau yang disorot punya script buka laptop
             else if (hit.collider.GetComponent<LaptopInteract>() != null)
             {
                 ShowPrompt("[Left Click] to start your Thesis's Progress");
             }
-            // C. Abang bisa tambahin "else if" lain di sini kalau ada laci, lemari, dll.
+            // ---> INI TAMBAHAN BUAT KERTAS BANG <---
+            else if (hit.collider.GetComponent<PaperInteract>() != null)
+            {
+                // Cek dulu apakah lagi baca kertas atau gak, kalau lagi baca teksnya disembunyiin
+                PaperInteract paper = hit.collider.GetComponent<PaperInteract>();
+                if (!paper.isReading) 
+                {
+                    ShowPrompt("[Left Click] to read paper");
+                }
+            }
         }
     }
 
@@ -64,7 +70,7 @@ public class PlayerInteraction : MonoBehaviour
         if (promptText != null)
         {
             promptText.text = message;
-            promptText.gameObject.SetActive(true); // Nyalakan teksnya
+            promptText.gameObject.SetActive(true); 
         }
     }
 
@@ -75,15 +81,18 @@ public class PlayerInteraction : MonoBehaviour
 
         if (Physics.Raycast(ray, out hit, interactDistance))
         {
-            // Cek interaksi pintu
             InteractablePeek targetPeek = hit.collider.GetComponent<InteractablePeek>();
             if (targetPeek != null)
             {
                 targetPeek.Interact();
             }
 
-            // (Catatan: Interaksi laptop abang pakai OnMouseDown di script LaptopInteract, 
-            // jadi nggak perlu dipanggil dari sini, otomatis jalan sendiri kalau diklik).
+            // ---> INI TAMBAHAN BUAT KLIK KERTAS BANG <---
+            PaperInteract targetPaper = hit.collider.GetComponent<PaperInteract>();
+            if (targetPaper != null && !targetPaper.isReading)
+            {
+                targetPaper.BukaKertas();
+            }
         }
     }
 }

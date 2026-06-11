@@ -124,6 +124,21 @@ public class GameManager : MonoBehaviour
         }
     }
 
+    // --- FUNGSI BARU: BUAT NGIRIM TEKS KERTAS ---
+    public string GetPaperText()
+    {
+        switch (currentNight)
+        {
+            case 1: return "To-do List Malam Ini: Kelarin Bab 1 soal latar belakang deteksi headline berita yang dimanipulasi. Raihandy udah bawel nanyain file buat digabung sama Ade Putri. Tadi pas ngetik teori 'timpa teks berbasis gambar', perasaan ada yang ngeliatin dari sudut ruangan... Ah, paling cuma halusinasi kurang kopi.";
+            case 2: return "Catatan Revisi Bab 2: Literatur review soal model IndoBERT sama OCR masih kurang kuat. Andi tadi siang ngingetin kalau penguji sempro-nya killer abis. Pokoknya harus kelar. Btw... pintu lemari itu tadi bukannya udah gue tutup rapet ya?";
+            case 3: return "Ade Putri udah ngomel nanyain jobdesk backend sama nyuruh push ke repository. Bab 3 Metodologi ini emang bikin sinting. Hawa kamar juga kerasa makin dingin, dari tadi kayak ada suara langkah kaki mondar-mandir di luar. Jangan hiraukan, fokus kelarin alur programnya.";
+            case 4: return "Gila! Dospem tiba-tiba SMS nyuruh rombak metodologi, padahal dataset gambar beritanya udah siap dieksekusi buat Bab 4. Gue harus nahan kantuk. Suara-suara di sekitar kamar mandi itu makin jelas. Kalau gue ngecek ke sana sekarang... aman nggak ya?";
+            case 5: return "Bab 5 beres! Hasil uji coba keluar, probabilitas deteksi manipulasinya dapet scale -1 sampai 1 persis sesuai target. Tapi sumpah... di salah satu sampel gambar hasil export CSV tadi, kayak ada bayangan aneh yang nyengir ke arah gue. Chat Raihandy soal kondisi sekitar makin bikin parno. Tolong, biarin gue lulus.";
+            case 6: return "BAB 6: KESIMPULAN.\n\nMEREKA NYATA. MEREKA ADA DI DALAM SINI.\n\nJANGAN TINGGALKAN LAPTOPNYA.\nAPAPUN YANG TERJADI, JANGAN PERNAH MENOLEH KE BELAKANG.";
+            default: return "Catatan kosong...";
+        }
+    }
+
     IEnumerator PlayIntroRoutine()
     {
         Time.timeScale = 0f; 
