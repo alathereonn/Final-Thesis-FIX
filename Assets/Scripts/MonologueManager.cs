@@ -4,20 +4,18 @@ using System.Collections;
 
 public class MonologueManager : MonoBehaviour
 {
-    // Bikin sistem Singleton biar gampang dipanggil dari script lain
     public static MonologueManager instance; 
 
     [Header("UI References")]
     public TextMeshProUGUI subtitleText;
 
     [Header("Settings")]
-    public float defaultDisplayTime = 3f; // Waktu standar teks muncul (detik)
+    public float defaultDisplayTime = 3f; 
 
     private Coroutine activeMonologue;
 
     void Awake()
     {
-        // Setup Singleton
         if (instance == null) 
         {
             instance = this;
@@ -28,36 +26,46 @@ public class MonologueManager : MonoBehaviour
         }
     }
 
-    // void Start()
-    // {
-    //     if (subtitleText != null) subtitleText.text = ""; // Bersihkan layar di awal
-    // }
+    void Start()
+    {
+        // Pastikan pas game mulai, teksnya bersih dan ngumpet dulu
+        if (subtitleText != null) 
+        {
+            subtitleText.text = ""; 
+            subtitleText.gameObject.SetActive(false); 
+        }
+    }
 
-    // Fungsi utama yang bakal dipanggil buat memunculkan teks
     public void ShowMonologue(string message, float duration = 0f)
     {
-        // Kalau masih ada monolog lama yang tayang, stop dulu biar ga numpuk
         if (activeMonologue != null)
         {
             StopCoroutine(activeMonologue);
         }
 
-        // Kalau durasi ga diisi, pakai durasi standar
         float timeToDisplay = (duration > 0f) ? duration : defaultDisplayTime;
-        
         activeMonologue = StartCoroutine(DisplayRoutine(message, timeToDisplay));
     }
 
     IEnumerator DisplayRoutine(string message, float duration)
     {
-        subtitleText.text = message;
+        if (subtitleText != null)
+        {
+            subtitleText.text = message;
+            
+            // ---> INI KUNCINYA BANG! PAKSA MUNCULIN OBJEKNYA <---
+            subtitleText.gameObject.SetActive(true); 
+        }
 
-        // BISA TAMBAHIN AUDIO DI SINI NANTI
-        // Contoh: audioSource.PlayOneShot(mumbleSound);
+        // Pake Realtime biar kebal dari sistem pause/time freeze
+        yield return new WaitForSecondsRealtime(duration);
 
-        yield return new WaitForSeconds(duration);
-
-        // Hapus teksnya setelah waktunya habis
-        subtitleText.text = "";
+        if (subtitleText != null)
+        {
+            subtitleText.text = "";
+            
+            // ---> MATIIN LAGI BIAR RAPI <---
+            subtitleText.gameObject.SetActive(false); 
+        }
     }
 }

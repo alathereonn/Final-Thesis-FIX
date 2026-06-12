@@ -12,6 +12,7 @@ public class OptionsManager : MonoBehaviour
     public Slider masterSlider;
     public Slider musicSlider;
     public Slider sfxSlider;
+    public Toggle crosshairToggle;
 
     // Fungsi ini otomatis jalan pertama kali pas menu Options dibuka
     void Start()
@@ -25,6 +26,11 @@ public class OptionsManager : MonoBehaviour
         if(masterSlider != null) masterSlider.value = savedMaster;
         if(musicSlider != null) musicSlider.value = savedMusic;
         if(sfxSlider != null) sfxSlider.value = savedSFX;
+        if (crosshairToggle != null)
+        {
+            // Kalau nilainya 1, berarti toggle dicentang (true)
+            crosshairToggle.isOn = PlayerPrefs.GetInt("CrosshairEnabled", 1) == 1;
+        }
 
         // 3. Terapkan volumenya ke Audio Mixer
         SetMasterVolume(savedMaster);
@@ -62,5 +68,20 @@ public class OptionsManager : MonoBehaviour
 
         // SAVE POSISI SLIDER KE MEMORY
         PlayerPrefs.SetFloat("SFXVol", sliderValue);
+    }
+
+    // FUNGSI INI AKAN KITA COLOK KE TOGGLE
+    public void OnCrosshairToggleChanged(bool isTurnedOn)
+    {
+        if (isTurnedOn)
+        {
+            PlayerPrefs.SetInt("CrosshairEnabled", 1); // Simpan status Nyala
+        }
+        else
+        {
+            PlayerPrefs.SetInt("CrosshairEnabled", 0); // Simpan status Mati
+        }
+        
+        PlayerPrefs.Save(); // Wajib di-save biar gak ilang pas pindah scene
     }
 }

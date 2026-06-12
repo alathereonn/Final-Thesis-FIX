@@ -42,6 +42,7 @@ public class GameManager : MonoBehaviour
 
     [Header("Time Settings")]
     public TextMeshProUGUI timeText;
+    public TextMeshProUGUI nightText;
     public float realSecondsPerHour = 10f; 
     
     private int currentHour = 12; 
@@ -60,7 +61,7 @@ public class GameManager : MonoBehaviour
     void Start()
     {
         StartCoroutine(PlayIntroRoutine());
-        PlayIntroDialogue();
+        // PlayIntroDialogue();
         UpdateBabTitle();
         ApplyNightSettings(); 
         UpdateTimeUI();
@@ -153,6 +154,8 @@ public class GameManager : MonoBehaviour
 
         Debug.Log("[GAME] Intro selesai, selamat mengerjakan skripsi!");
         SendStartNightSMS();
+
+        PlayIntroDialogue();
     }
 
     void Update()
@@ -288,6 +291,7 @@ public class GameManager : MonoBehaviour
     void UpdateTimeUI()
     {
         if (timeText != null) timeText.text = currentHour + " AM";
+        if (nightText != null) nightText.text = "Night " + currentNight;
     }
 
     public void RestartGame()

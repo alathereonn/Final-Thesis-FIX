@@ -41,9 +41,9 @@ public class PlayerInteraction : MonoBehaviour
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, interactDistance))
+        // ---> UPGRADE: PAKE LASER TEBAL BIAR KLIKNYA GAMPANG <---
+        if (Physics.SphereCast(ray, 0.3f, out hit, interactDistance))
         {
-            Debug.Log("LASER NABRAK: " + hit.collider.gameObject.name);
             if (hit.collider.GetComponent<InteractablePeek>() != null)
             {
                 ShowPrompt("[Left Click] to take a peek");
@@ -52,15 +52,24 @@ public class PlayerInteraction : MonoBehaviour
             {
                 ShowPrompt("[Left Click] to start your Thesis's Progress");
             }
-            // ---> INI TAMBAHAN BUAT KERTAS BANG <---
             else if (hit.collider.GetComponent<PaperInteract>() != null)
             {
-                // Cek dulu apakah lagi baca kertas atau gak, kalau lagi baca teksnya disembunyiin
                 PaperInteract paper = hit.collider.GetComponent<PaperInteract>();
                 if (!paper.isReading) 
                 {
                     ShowPrompt("[Left Click] to read paper");
                 }
+            }
+            // ---> INI DIA SENSOR GITARNYA BANG <---
+            else if (hit.collider.GetComponent<GuitarInteract>() != null)
+            {
+                GuitarInteract barang = hit.collider.GetComponent<GuitarInteract>();
+                ShowPrompt(barang.teksPrompt); 
+            }
+            else if (hit.collider.GetComponent<BedInteract>() != null)
+            {
+                BedInteract kasur = hit.collider.GetComponent<BedInteract>();
+                ShowPrompt(kasur.teksPrompt); 
             }
         }
     }
@@ -79,20 +88,19 @@ public class PlayerInteraction : MonoBehaviour
         Ray ray = new Ray(playerCamera.transform.position, playerCamera.transform.forward);
         RaycastHit hit;
 
-        if (Physics.Raycast(ray, out hit, interactDistance))
+        if (Physics.SphereCast(ray, 0.3f, out hit, interactDistance))
         {
             InteractablePeek targetPeek = hit.collider.GetComponent<InteractablePeek>();
-            if (targetPeek != null)
-            {
-                targetPeek.Interact();
-            }
+            if (targetPeek != null) targetPeek.Interact();
 
-            // ---> INI TAMBAHAN BUAT KLIK KERTAS BANG <---
             PaperInteract targetPaper = hit.collider.GetComponent<PaperInteract>();
-            if (targetPaper != null && !targetPaper.isReading)
-            {
-                targetPaper.BukaKertas();
-            }
+            if (targetPaper != null && !targetPaper.isReading) targetPaper.BukaKertas();
+            
+            GuitarInteract targetGuitar = hit.collider.GetComponent<GuitarInteract>();
+            if (targetGuitar != null) targetGuitar.Interact();
+
+            BedInteract targetBed = hit.collider.GetComponent<BedInteract>();
+            if (targetBed != null) targetBed.Interact();
         }
     }
 }
