@@ -13705,7 +13705,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   introCanvas: {fileID: 1488553554}
   introText: {fileID: 1583656981}
-  requireFullProgress: 0
+  requireFullProgress: 1
   laptopManager: {fileID: 418429892}
   winCanvas: {fileID: 1085884001}
   gameOverCanvas: {fileID: 1227720211}
@@ -13715,7 +13715,7 @@ MonoBehaviour:
   doorMonster: {fileID: 2111452868}
   windowMonster: {fileID: 2080230283}
   toiletMonster: {fileID: 1147819838}
-  currentNight: 6
+  currentNight: 1
   nightSettings:
   - doorAiLevel: 0
     windowAiLevel: 0
@@ -13732,9 +13732,9 @@ MonoBehaviour:
   - doorAiLevel: 11
     windowAiLevel: 11
     toiletAiLevel: 11
-  - doorAiLevel: 20
-    windowAiLevel: 20
-    toiletAiLevel: 20
+  - doorAiLevel: 13
+    windowAiLevel: 13
+    toiletAiLevel: 13
   timeText: {fileID: 1876929288}
   nightText: {fileID: 0}
   realSecondsPerHour: 45
@@ -15010,7 +15010,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1322082319}
-  m_Enabled: 0
+  m_Enabled: 1
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 2f1800694baf76f4899e22421b4ec650, type: 3}
   m_Name: 
