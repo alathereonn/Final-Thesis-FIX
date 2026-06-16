@@ -13736,7 +13736,7 @@ MonoBehaviour:
     windowAiLevel: 13
     toiletAiLevel: 13
   timeText: {fileID: 1876929288}
-  nightText: {fileID: 0}
+  nightText: {fileID: 398894444}
   realSecondsPerHour: 45
 --- !u!114 &1149544010
 MonoBehaviour:
@@ -19969,7 +19969,7 @@ Canvas:
   m_OverridePixelPerfect: 0
   m_SortingBucketNormalizedSize: 0
   m_VertexColorAlwaysGammaSpace: 0
-  m_AdditionalShaderChannelsFlag: 0
+  m_AdditionalShaderChannelsFlag: 25
   m_UpdateRectTransformForStandalone: 0
   m_SortingLayerID: 0
   m_SortingOrder: 0
