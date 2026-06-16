@@ -1,7 +1,7 @@
 using UnityEngine;
 using TMPro;
-using UnityEngine.UI; // <--- INI KUNCI JAWABANNYA!
-using System.Collections; // Wajib dipanggil buat Coroutine animasi
+using UnityEngine.UI; 
+using System.Collections; 
 
 public class PhoneManager : MonoBehaviour
 {
@@ -13,25 +13,29 @@ public class PhoneManager : MonoBehaviour
     public TextMeshProUGUI messageText;
     public GameObject instructionUI; 
 
+    // ---> INI COLOKAN BARU BUAT BLUR VOLUME <---
+    [Header("Post Processing Effects")]
+    public GameObject blurVolume;
+
     [Header("Animation Settings")]
-    public float slideDuration = 0.3f; // Kecepatan HP naik/turun
-    public Vector2 hiddenPosition = new Vector2(0, -600f); // Posisi Y saat HP ngumpet di bawah
-    public Vector2 visiblePosition = new Vector2(0, 0f);   // Posisi Y saat HP nampil di layar
+    public float slideDuration = 0.3f; 
+    public Vector2 hiddenPosition = new Vector2(0, -600f); 
+    public Vector2 visiblePosition = new Vector2(0, 0f);   
 
     [Header("Instruction Settings")]
-    [Tooltip("Berapa lama teks instruksi muncul sebelum hilang otomatis")]
-    public float instructionDuration = 4f; // <--- TAMBAHAN: Durasi teks instruksi nampil (bisa diganti di inspector)
+    public float instructionDuration = 4f; 
 
     [Header("Audio")]
     public AudioSource audioSource;
     public AudioClip notifSound;
+    
     [HideInInspector]
     public bool canUsePhone = true;
 
     private bool isPhoneActive = false;
     private RectTransform phoneRect;
     private Coroutine activeAnim;
-    private Coroutine instructionFadeCor; // <--- TAMBAHAN: Buat nge-track coroutine timer instruksi
+    private Coroutine instructionFadeCor; 
 
     void Awake()
     {
@@ -43,22 +47,23 @@ public class PhoneManager : MonoBehaviour
     {
         canUsePhone = true; 
         activeAnim = null;
-        instructionFadeCor = null; // <--- TAMBAHAN
+        instructionFadeCor = null; 
         
-        // Ambil komponen RectTransform dari HP abang buat digerak-gerakin
         if (phoneUI != null)
         {
             phoneRect = phoneUI.GetComponent<RectTransform>();
-            phoneRect.anchoredPosition = hiddenPosition; // Posisikan di bawah layar saat mulai
+            phoneRect.anchoredPosition = hiddenPosition; 
             phoneUI.SetActive(false); 
         }
 
         if (instructionUI != null) instructionUI.SetActive(false);
+
+        // ---> PASTIKAN BLUR MATI SAAT GAME BARU MULAI <---
+        if (blurVolume != null) blurVolume.SetActive(false);
     }
 
     void Update()
     {
-        // Buka tutup HP pakai tombol TAB (sesuai request abang)
         if (canUsePhone && Input.GetKeyDown(KeyCode.Tab))
         {
             TogglePhone();
@@ -70,7 +75,6 @@ public class PhoneManager : MonoBehaviour
         if (senderText != null) senderText.text = sender;
         if (messageText != null) messageText.text = message;
         
-        // Paksa Layout-nya update sekarang juga!
         Canvas.ForceUpdateCanvases(); 
 
         if (audioSource != null && notifSound != null)
@@ -78,17 +82,14 @@ public class PhoneManager : MonoBehaviour
             audioSource.PlayOneShot(notifSound);
         }
 
-        // --- MODIFIKASI DI SINI ---
         if (instructionUI != null && !isPhoneActive)
         {
             instructionUI.SetActive(true);
 
-            // Kalau sebelumnya udah ada timer yang jalan (misal dapet SMS beruntun), reset dulu timernya
             if (instructionFadeCor != null) 
             {
                 StopCoroutine(instructionFadeCor);
             }
-            // Mulai timer baru buat matiin teks otomatis
             instructionFadeCor = StartCoroutine(HideInstructionAfterDelay(instructionDuration));
         }
     }
@@ -101,26 +102,29 @@ public class PhoneManager : MonoBehaviour
 
         if (isPhoneActive)
         {
-            // --- BARIS INI YANG BERTUGAS MEMATIKAN TEKSNYA ---
             if (instructionUI != null) instructionUI.SetActive(false);
             
-            // TAMBAHAN: Stop timer instruksi kalau HP dibuka manual sebelum timernya habis
             if (instructionFadeCor != null)
             {
                 StopCoroutine(instructionFadeCor);
                 instructionFadeCor = null;
             }
             
+            // ---> NYALAKAN BLUR PAS HP DIBUKA <---
+            if (blurVolume != null) blurVolume.SetActive(true);
+
             phoneUI.SetActive(true);
             activeAnim = StartCoroutine(SlidePhoneAnim(visiblePosition, false));
         }
         else
         {
+            // ---> MATIKAN BLUR PAS HP DISIMPEN <---
+            if (blurVolume != null) blurVolume.SetActive(false);
+
             activeAnim = StartCoroutine(SlidePhoneAnim(hiddenPosition, true));
         }
     }
 
-    // --- TAMBAHAN: Coroutine baru untuk nunggu beberapa detik lalu matiin instruksi ---
     IEnumerator HideInstructionAfterDelay(float delay)
     {
         yield return new WaitForSeconds(delay);
@@ -128,7 +132,7 @@ public class PhoneManager : MonoBehaviour
         {
             instructionUI.SetActive(false);
         }
-        instructionFadeCor = null; // Kosongkan track-nya setelah selesai
+        instructionFadeCor = null; 
     }
 
     IEnumerator SlidePhoneAnim(Vector2 targetPos, bool disableAfter)
@@ -139,14 +143,12 @@ public class PhoneManager : MonoBehaviour
         while (elapsedTime < slideDuration)
         {
             elapsedTime += Time.deltaTime;
-            // Pake SmoothStep biar gerakannya ga kaku (ada ngeremnya)
             float t = Mathf.SmoothStep(0f, 1f, elapsedTime / slideDuration);
             
             phoneRect.anchoredPosition = Vector2.Lerp(startPos, targetPos, t);
             yield return null;
         }
 
-        // Pastikan posisi pas di titik target saat animasi selesai
         phoneRect.anchoredPosition = targetPos;
 
         if (disableAfter && phoneUI != null)
@@ -154,34 +156,34 @@ public class PhoneManager : MonoBehaviour
             phoneUI.SetActive(false);
         }
 
-        activeAnim = null; // Kosongkan coroutine biar bisa dipencet lagi
+        activeAnim = null; 
     }
 
-    // Fungsi untuk menyembunyikan dan mengunci HP paksa
     public void ForceHidePhone()
     {
-        canUsePhone = false; // Kunci tombol Tab
+        canUsePhone = false; 
 
         if (isPhoneActive)
         {
             isPhoneActive = false;
-            if (activeAnim != null) StopCoroutine(activeAnim); // Stop animasi kalau lagi jalan
+            if (activeAnim != null) StopCoroutine(activeAnim); 
             
             if (phoneUI != null) phoneUI.SetActive(false);
-            if (phoneRect != null) phoneRect.anchoredPosition = hiddenPosition; // Kembalikan ke bawah
+            if (phoneRect != null) phoneRect.anchoredPosition = hiddenPosition; 
         }
 
-        // TAMBAHAN: Stop timer juga kalau di-force hide
         if (instructionFadeCor != null)
         {
             StopCoroutine(instructionFadeCor);
             instructionFadeCor = null;
         }
 
-        if (instructionUI != null) instructionUI.SetActive(false); // Sembunyikan teks "Tekan E"
+        if (instructionUI != null) instructionUI.SetActive(false); 
+
+        // ---> PASTIKAN BLUR MATI KALAU HP DIPAKSA TUTUP <---
+        if (blurVolume != null) blurVolume.SetActive(false);
     }
 
-    // Fungsi untuk membuka kuncian HP lagi
     public void AllowPhoneUsage()
     {
         canUsePhone = true; 
