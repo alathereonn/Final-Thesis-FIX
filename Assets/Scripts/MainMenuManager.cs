@@ -58,6 +58,16 @@ public class MainMenuManager : MonoBehaviour
         SceneManager.LoadScene("OptionsMenu");
     }
 
+    public void OpenCreditScene()
+    {
+        SceneManager.LoadScene("CreditMenu"); 
+    }
+
+    public void OpenGalleryScene()
+    {
+        SceneManager.LoadScene("GalleryMenu"); 
+    }
+
     // Tambahkan fungsi ini di bawah fungsi OpenOptionsScene atau di mana saja di dalam class
     public void QuitGame()
     {

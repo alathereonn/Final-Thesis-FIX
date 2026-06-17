@@ -75,16 +75,16 @@ public class GameManager : MonoBehaviour
 
         switch (currentNight)
         {
-            case 1: dialogMessage = "Hadeh... revisian TA ini nggak kelar-kelar, mana deadline besok."; break;
-            case 2: dialogMessage = "Semalam perasaan ada yang aneh... Ah udahlah, mending fokus ngetik Bab 2."; break;
-            case 3: dialogMessage = "Udah malam ketiga... Kenapa hawanya di kamar ini makin ga enak ya?"; break;
-            case 4: dialogMessage = "Bodo amat sama suara-suara itu, kalau TA ga kelar gue bisa DO!"; break;
-            case 5: dialogMessage = "Tinggal dikit lagi... Gue ga boleh mati konyol sebelum sidang!"; break;
+            case 1: dialogMessage = "Two years stuck in this room... I need to let go of this perfectionism. It has to be tonight."; break;
+            case 2: dialogMessage = "Why is my writing never good enough? The air in this room... it's getting suffocating."; break;
+            case 3: dialogMessage = "Tari graduated six months ago. I really am left behind. Just me and this damn room."; break;
+            case 4: dialogMessage = "Focus. Just ignore the noises. Mom and Dad are waiting for me to finish..."; break;
+            case 5: dialogMessage = "I can't tell what's real anymore. The words on this screen, or whatever is standing in the corner?"; break;
             case 6: 
-                dialogMessage = "Malam penentuan... Selesaiin program ini sekarang, atau terjebak selamanya!"; 
+                dialogMessage = "The final night. It's either I finish this program, or I lose my mind completely."; 
                 displayTime = 5f; 
                 break;
-            default: dialogMessage = "Lanjut nugas..."; displayTime = 3f; break;
+            default: dialogMessage = "Back to work..."; displayTime = 3f; break;
         }
 
         if (MonologueManager.instance != null)
@@ -97,15 +97,15 @@ public class GameManager : MonoBehaviour
     {
         if (babTitleText == null) return; 
 
-        switch (currentNight)
+switch (currentNight)
         {
-            case 1: babTitleText.text = "BAB I\nPENDAHULUAN"; break;
-            case 2: babTitleText.text = "BAB II\nTINJAUAN PUSTAKA"; break;
-            case 3: babTitleText.text = "BAB III\nMETODOLOGI PENELITIAN"; break;
-            case 4: babTitleText.text = "BAB IV\nIMPLEMENTASI SISTEM"; break;
-            case 5: babTitleText.text = "BAB V\nHASIL DAN UJI COBA"; break;
-            case 6: babTitleText.text = "BAB VI\nKESIMPULAN DAN SARAN"; break;
-            default: babTitleText.text = "DRAFT TA\nREVISI FINAL V2"; break;
+            case 1: babTitleText.text = "CHAPTER I\nINTRODUCTION"; break;
+            case 2: babTitleText.text = "CHAPTER II\nLITERATURE REVIEW"; break;
+            case 3: babTitleText.text = "CHAPTER III\nRESEARCH METHODOLOGY"; break;
+            case 4: babTitleText.text = "CHAPTER IV\nSYSTEM IMPLEMENTATION"; break;
+            case 5: babTitleText.text = "CHAPTER V\nRESULTS AND TESTING"; break;
+            case 6: babTitleText.text = "CHAPTER VI\nCONCLUSION AND RECOMMENDATIONS"; break;
+            default: babTitleText.text = "THESIS DRAFT\nFINAL REVISION V2"; break;
         }
     }
 
@@ -115,13 +115,13 @@ public class GameManager : MonoBehaviour
 
         switch (currentNight)
         {
-            case 1: PhoneManager.instance.ReceiveSMS("Raihandy", "Bro, ntar kalau Bab 1 udah kelar, langsung upload ke Drive kelompok ya. Ditunggu Ade Putri nih buat digabung."); break;
-            case 2: PhoneManager.instance.ReceiveSMS("Andi", "Gila, dapet info dari kelas sebelah, katanya dosen penguji sempro besok killer banget. Lu mending kelarin malam ini bro."); break;
-            case 3: PhoneManager.instance.ReceiveSMS("Ade Putri", "Andi sama Raihandy nanyain jobdesk backend-nya udah sampe mana? Tolong buruan di-push ke repisitori ya."); break;
-            case 4: PhoneManager.instance.ReceiveSMS("Dosen Pembimbing", "Saya sudah cek bab metodologi kamu. Masih banyak yang kurang tepat, tolong perbaiki malam ini."); break;
-            case 5: PhoneManager.instance.ReceiveSMS("Raihandy", "Bro, lu aman kan di kamar? Kok grup angkatan rame katanya ada yang aneh di sekitar kampus malam-malam gini."); break;
-            case 6: PhoneManager.instance.ReceiveSMS("Nomor Tidak Dikenal", "MATIKAN LAPTOPNYA SEKARANG. JANGAN LIHAT KE BELAKANG."); break;
-            default: PhoneManager.instance.ReceiveSMS("Sistem", "Selamat mengerjakan tugas akhir."); break;
+            case 1: PhoneManager.instance.ReceiveSMS("Mom", "How are you doing? Your father and I are always praying for you. Don't push yourself too hard, and make sure you eat."); break;
+            case 2: PhoneManager.instance.ReceiveSMS("Tari", "Hey, are you still at your place? We haven't talked since my graduation. Let me know if you need help with Chapter 2."); break;
+            case 3: PhoneManager.instance.ReceiveSMS("Thesis Advisor", "This is your final warning. If the draft isn't on my desk by this week, you are facing a potential drop-out."); break;
+            case 4: PhoneManager.instance.ReceiveSMS("Mom", "Why aren't you replying to my messages? The neighbors keep asking when you're graduating... I just smile at them. Keep going, son."); break;
+            case 5: PhoneManager.instance.ReceiveSMS("Tari", "Iko... are you really still in that room? Please open the door. You're not alone in there."); break;
+            case 6: PhoneManager.instance.ReceiveSMS("Unknown", "THE PRESSURE WILL CRUSH YOU. WE WILL FINISH YOU. DO NOT LOOK BACK."); break;
+            default: PhoneManager.instance.ReceiveSMS("System", "Good luck with your thesis."); break;
         }
     }
 
@@ -130,13 +130,13 @@ public class GameManager : MonoBehaviour
     {
         switch (currentNight)
         {
-            case 1: return "To-do List Malam Ini: Kelarin Bab 1 soal latar belakang deteksi headline berita yang dimanipulasi. Raihandy udah bawel nanyain file buat digabung sama Ade Putri. Tadi pas ngetik teori 'timpa teks berbasis gambar', perasaan ada yang ngeliatin dari sudut ruangan... Ah, paling cuma halusinasi kurang kopi.";
-            case 2: return "Catatan Revisi Bab 2: Literatur review soal model IndoBERT sama OCR masih kurang kuat. Andi tadi siang ngingetin kalau penguji sempro-nya killer abis. Pokoknya harus kelar. Btw... pintu lemari itu tadi bukannya udah gue tutup rapet ya?";
-            case 3: return "Ade Putri udah ngomel nanyain jobdesk backend sama nyuruh push ke repository. Bab 3 Metodologi ini emang bikin sinting. Hawa kamar juga kerasa makin dingin, dari tadi kayak ada suara langkah kaki mondar-mandir di luar. Jangan hiraukan, fokus kelarin alur programnya.";
-            case 4: return "Gila! Dospem tiba-tiba SMS nyuruh rombak metodologi, padahal dataset gambar beritanya udah siap dieksekusi buat Bab 4. Gue harus nahan kantuk. Suara-suara di sekitar kamar mandi itu makin jelas. Kalau gue ngecek ke sana sekarang... aman nggak ya?";
-            case 5: return "Bab 5 beres! Hasil uji coba keluar, probabilitas deteksi manipulasinya dapet scale -1 sampai 1 persis sesuai target. Tapi sumpah... di salah satu sampel gambar hasil export CSV tadi, kayak ada bayangan aneh yang nyengir ke arah gue. Chat Raihandy soal kondisi sekitar makin bikin parno. Tolong, biarin gue lulus.";
-            case 6: return "BAB 6: KESIMPULAN.\n\nMEREKA NYATA. MEREKA ADA DI DALAM SINI.\n\nJANGAN TINGGALKAN LAPTOPNYA.\nAPAPUN YANG TERJADI, JANGAN PERNAH MENOLEH KE BELAKANG.";
-            default: return "Catatan kosong...";
+            case 1: return "To-do List: Finish Chapter 1. I've rewritten this paragraph dozens of times and it still feels like garbage. This boarding house feels so dead since Tari graduated six months ago. We promised to graduate together... whatever. I have to finish this tonight.";
+            case 2: return "Chapter 2 is a dead end. Are my standards too high or is my brain just rotting? Mom's text this morning made my chest tight. They don't force me, but their silent expectations are suffocating. By the way... I swear I saw a shadow moving in the corner of my eye while staring at the monitor.";
+            case 3: return "Tari texted me again. I feel pathetic. She's already working, and I'm still rotting in this room. Something is wrong with this place. The things on my desk keep shifting, and I know I didn't move them. Please tell me it's just sleep deprivation.";
+            case 4: return "My advisor threatened me with a drop-out! I can't fail. But how am I supposed to focus when the whispers from the bathroom are getting louder?! This isn't just academic stress anymore. Something was born from my own fear and expectations, and now it's watching me.";
+            case 5: return "The line between reality and illusion is gone. That text from Tari earlier... I know for a fact it wasn't her. This room has become a prison. That figure... it's not a ghost. It's the manifestation of my own failures. And it's hungry.";
+            case 6: return "CHAPTER 6: CONCLUSION.\n\nThey won't let me leave.\nThe pressure is alive. The expectations are suffocating.\n\nTHE ONLY WAY OUT IS TO FINISH THIS.\nKEEP YOUR EYES ON THE SCREEN.\nDO. NOT. LOOK. BACK.";
+            default: return "Blank note...";
         }
     }
 
