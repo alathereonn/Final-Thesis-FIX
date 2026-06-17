@@ -75,17 +75,40 @@ public class MonsterAI : MonoBehaviour
         }
     }
 
-    void AdvanceStage()
+void AdvanceStage()
     {
         currentStage++;
         Debug.Log($"[TENSION] {monsterName} advanced to Stage {currentStage}!");
 
+        // --- SISTEM DIALOG DINAMIS BERDASARKAN MALAM ---
         if (!hasPlayedFirstStageDialog)
         {
             hasPlayedFirstStageDialog = true; 
             if (MonologueManager.instance != null)
             {
-                MonologueManager.instance.ShowMonologue("Perasaan tadi gue udah kunci pintu deh...", 3f);
+                string reactionText = "";
+                float showTime = 3f;
+
+                // Cek malam ke berapa lewat GameManager
+                if (gameManager != null)
+                {
+                    switch (gameManager.currentNight)
+                    {
+                        case 1: reactionText = "What? What the hell was that? I must be exhausted."; break;
+                        case 2: reactionText = "There's that sound again. I'm not imagining this."; break;
+                        case 3: reactionText = "Am I losing my mind?"; break;
+                        case 4: reactionText = "It's getting closer, Iko."; showTime = 4f; break;
+                        case 5: reactionText = "Alright. Now, I'm pissed."; showTime = 4f; break;
+                        case 6: reactionText = "Come on! Please, just let me finish this!"; showTime = 4f; break;
+                        default: reactionText = "What was that?"; break;
+                    }
+                }
+                else
+                {
+                    reactionText = "What? What the hell was that???";
+                }
+
+                MonologueManager.instance.ShowMonologue(reactionText, showTime);
             }
         }
 
