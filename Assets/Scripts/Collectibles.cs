@@ -62,6 +62,13 @@ public class Collectibles : MonoBehaviour
     {
         // 1. Simpan data ke Gallery
         PlayerPrefs.SetInt(itemID, 1);
+
+        string kunciBarang = "Koleksi_01"; // Sesuaikan dengan nama ID barang abang
+        PlayerPrefs.SetInt(kunciBarang, 1);
+
+        string waktuSekarang = System.DateTime.Now.ToString("dd MMM yyyy - HH:mm");
+        PlayerPrefs.SetString(kunciBarang + "_Date", waktuSekarang);
+
         PlayerPrefs.Save();
         Debug.Log("Sukses! " + itemID + " sekarang sudah masuk Gallery.");
 
